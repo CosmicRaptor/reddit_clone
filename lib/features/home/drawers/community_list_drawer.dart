@@ -5,12 +5,17 @@ import 'package:reddit_clone/features/community/controller/community_controller.
 import 'package:routemaster/routemaster.dart';
 
 import '../../../core/common/loader.dart';
+import '../../../models/community_model.dart';
 
 class CommunityListDrawer extends ConsumerWidget {
   const CommunityListDrawer({super.key});
 
   void navigateToCreateCommunity(BuildContext context){
     Routemaster.of(context).push('/create-community');
+  }
+
+  void navigateToCommunity(BuildContext context, Community community){
+    Routemaster.of(context).push('/r/${community.name}');
   }
 
   @override
@@ -35,7 +40,7 @@ class CommunityListDrawer extends ConsumerWidget {
                     leading: CircleAvatar(
                       backgroundImage: NetworkImage(community.avatar),
                     ),
-                    onTap: (){},
+                    onTap: (){navigateToCommunity(context, community);},
                   );
                 },
               ),
