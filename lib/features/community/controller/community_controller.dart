@@ -106,8 +106,8 @@ class CommunityController extends StateNotifier<bool> {
   void editCommunity({
     required File? profileFile,
     required File? bannerFile,
-    required Uint8List? profileWebFile,
-    required Uint8List? bannerWebFile,
+    Uint8List? profileWebFile,
+    Uint8List? bannerWebFile,
     required BuildContext context,
     required Community community,
   }) async {
