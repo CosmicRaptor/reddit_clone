@@ -6,13 +6,21 @@ import 'package:reddit_clone/features/auth/controller/auth_controller.dart';
 import 'package:reddit_clone/features/community/controller/community_controller.dart';
 import 'package:routemaster/routemaster.dart';
 
+import '../../../models/community_model.dart';
+
 class CommunityScreen extends ConsumerWidget {
   final String name;
 
   const CommunityScreen({super.key, required this.name});
 
-  void navigateTOModTools(BuildContext context){
+  void navigateTOModTools(BuildContext context) {
     Routemaster.of(context).push('/mod-tools/$name');
+  }
+
+  void joinCommunity(WidgetRef ref, Community community, BuildContext context) {
+    ref
+        .read(communityControllerProvider.notifier)
+        .joinCommunity(community, context);
   }
 
   @override
@@ -48,18 +56,44 @@ class CommunityScreen extends ConsumerWidget {
                                 backgroundImage: NetworkImage(data.avatar),
                                 radius: 35,
                               )),
-                          const SizedBox(height: 5,),
+                          const SizedBox(
+                            height: 5,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('r/${data.name}', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),),
-                              data.mods.contains(user.uid) ?
-                              OutlinedButton(onPressed: (){navigateTOModTools(context);},style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))), child: const Text('Mod Tools'))
-                              :  OutlinedButton(onPressed: (){},style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))), child:  Text(data.members.contains(user.uid) ?'Joined' : 'Join'))
-
+                              Text(
+                                'r/${data.name}',
+                                style: const TextStyle(
+                                    fontSize: 19, fontWeight: FontWeight.bold),
+                              ),
+                              data.mods.contains(user.uid)
+                                  ? OutlinedButton(
+                                      onPressed: () {
+                                        navigateTOModTools(context);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20))),
+                                      child: const Text('Mod Tools'))
+                                  : OutlinedButton(
+                                      onPressed: () =>
+                                          joinCommunity(ref, data, context),
+                                      style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20))),
+                                      child: Text(
+                                          data.members.contains(user.uid)
+                                              ? 'Joined'
+                                              : 'Join'))
                             ],
                           ),
-                          Padding(padding: const EdgeInsets.only(top: 10), child: Text('${data.members.length} members'),)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Text('${data.members.length} members'),
+                          )
                         ],
                       ),
                     ),
