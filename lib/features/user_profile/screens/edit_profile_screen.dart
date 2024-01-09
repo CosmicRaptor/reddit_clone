@@ -61,10 +61,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(userProfileControllerProvider);
-
+    final currentTheme = ref.watch(themeNotifierProvider);
 
     return ref.watch(getUserDataProvider(widget.uid)).when(
         data: (data) => Scaffold(
+          backgroundColor: currentTheme.colorScheme.background,
           appBar: AppBar(
             title: const Text('Edit profile'),
             centerTitle: false,
@@ -85,7 +86,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             radius: const Radius.circular(10),
                             dashPattern: const [10,4],
                             strokeCap: StrokeCap.round,
-                            color: Pallete.darkModeAppTheme.textTheme.bodyText2!.color!,
+                            color: currentTheme.textTheme.bodyMedium!.color!,
                             child: Container(
                               width: double.infinity,
                               height: 150,
@@ -94,9 +95,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               child: bannerFile!=null ? Image.file(bannerFile!) :  data.banner.isEmpty ||
                                   Constants.bannerDefault == data.banner
                                   ? const Center(
-                                child: Icon(
-                                  Icons.camera_alt_rounded,
-                                  size: 40,
+                                    child: Icon(
+                                    Icons.camera_alt_rounded,
+                                    size: 40,
                                 ),
                               )
                                   : Image.network(data.banner),
