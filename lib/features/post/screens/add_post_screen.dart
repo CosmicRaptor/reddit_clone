@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
@@ -9,7 +8,6 @@ import 'package:reddit_clone/features/community/controller/community_controller.
 import 'package:reddit_clone/theme/pallet.dart';
 
 import '../../../core/common/loader.dart';
-import '../../../core/constants/constants.dart';
 import '../../../core/utils.dart';
 import '../../../models/community_model.dart';
 

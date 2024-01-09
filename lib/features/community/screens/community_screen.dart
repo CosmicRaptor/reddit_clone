@@ -4,7 +4,6 @@ import 'package:reddit_clone/core/common/error_text.dart';
 import 'package:reddit_clone/core/common/loader.dart';
 import 'package:reddit_clone/features/auth/controller/auth_controller.dart';
 import 'package:reddit_clone/features/community/controller/community_controller.dart';
-import 'package:reddit_clone/theme/pallet.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../../../models/community_model.dart';
@@ -26,7 +25,6 @@ class CommunityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider)!;
-    final currentTheme = ref.watch(themeNotifierProvider);
     return Scaffold(
       body: ref.watch(getCommunityByNameProvider(name)).when(
           data: (data) => NestedScrollView(
