@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/core/common/error_text.dart';
 import 'package:reddit_clone/features/community/controller/community_controller.dart';
+import 'package:reddit_clone/features/post/controller/add_post_controller.dart';
 import 'package:reddit_clone/theme/pallet.dart';
 
 import '../../../core/common/loader.dart';
@@ -34,6 +35,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
   final linkcontroller = TextEditingController();
   Community? selectedCommunity;
 
+
   @override
   void dispose() {
     titlecontroller.dispose();
@@ -51,17 +53,36 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
     }
   }
 
+  void createPost(){
+    if (widgetChoice == 'image' && bannerFile != null && titlecontroller.text.isNotEmpty){
+      ref.read(postControllerProvider.notifier).shareImagePost(context: context, title: titlecontroller.text.trim(), selectedCommunity: selectedCommunity ?? communities[0], file: bannerFile, webFile: null);
+    }
+    else if (widgetChoice == 'text' && titlecontroller.text.isNotEmpty && descriptioncontroller.text.isNotEmpty){
+      ref.read(postControllerProvider.notifier).shareTextPost(context: context, title: titlecontroller.text.trim(), selectedCommunity: selectedCommunity ?? communities[0], description: descriptioncontroller.text.trim(), );
+    }
+    else if (widgetChoice == 'link' && linkcontroller.text.isNotEmpty && titlecontroller.text.isNotEmpty){
+      ref.read(postControllerProvider.notifier).shareLinkPost(context: context, title: titlecontroller.text.trim(), selectedCommunity: selectedCommunity ?? communities[0], link: linkcontroller.text.trim(), );
+    }
+    else {
+      showSnackBar(context, 'enter all fields');
+    }
+  }
+
+  final currentTheme = Pallete.darkModeAppTheme;
+  final isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final currentTheme = ref.watch(themeNotifierProvider);
-    print(widgetChoice ?? 'null');
+    final isLoading = ref.watch(postControllerProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create a post'),
         centerTitle: false,
-        actions: [TextButton(onPressed: () {}, child: const Text('Post'))],
+        actions: [TextButton(onPressed: createPost, child: const Text('Post'))],
       ),
-      body: Column(
+      body:  isLoading ? const Loader() : Column(
         children: [
           TextField(
             controller: titlecontroller,
