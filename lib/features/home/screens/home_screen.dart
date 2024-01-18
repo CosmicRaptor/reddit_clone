@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/features/auth/controller/auth_controller.dart';
@@ -8,13 +10,18 @@ import 'package:reddit_clone/features/home/drawers/profile_drawer.dart';
 import 'package:reddit_clone/theme/pallet.dart';
 import 'package:routemaster/routemaster.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   void displayDrawer(BuildContext context){
     Scaffold.of(context).openDrawer();
   }
-  
+
   void displayEndDrawer(BuildContext context){
     Scaffold.of(context).openEndDrawer();
   }
@@ -23,8 +30,15 @@ class HomeScreen extends ConsumerWidget {
     Routemaster.of(context).push('/add-post');
   }
 
+  void refreshSortMethod(){
+    setState(() {
+      //this should work I guess?
+    });
+  }
+  String? sortChoice = 'top';
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(userProvider)!;
     final currentTheme = ref.watch(themeNotifierProvider);
     return Scaffold(
@@ -40,6 +54,55 @@ class HomeScreen extends ConsumerWidget {
           }
         ),
         actions: [
+          IconButton(onPressed: (){
+            showDialog(context: context, builder: (context) => StatefulBuilder(
+              builder: (context, setstate) {
+                return BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: SizedBox(
+                        height: 120,
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: const Text('Top'),
+                              leading: Radio(
+                                value: 'top',
+                                groupValue: sortChoice,
+                                onChanged: (value) {
+                                  setState(() {
+                                    sortChoice = value!;
+                                    refreshSortMethod();
+                                    Navigator.of(context).pop();
+                                  });
+                                },
+                              ),
+                            ),
+                            ListTile(
+                              title: const Text('New'),
+                              leading: Radio(
+                                value: 'new',
+                                groupValue: sortChoice,
+                                onChanged: (value) {
+                                  setState(() {
+                                    sortChoice = value!;
+                                    refreshSortMethod();
+                                    Navigator.of(context).pop();
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
+            ));
+          }, icon: const Icon(Icons.sort)),
           IconButton(onPressed: (){
             showSearch(context: context, delegate: SearchCommunityDelegate(ref));
           }, icon: const Icon(Icons.search)),
@@ -57,8 +120,8 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       drawer: const CommunityListDrawer(),
-      endDrawer:  ProfileDrawer(),
-      body: FeedScreen(),
+      endDrawer:  const ProfileDrawer(),
+      body: FeedScreen(sortChoice),
       floatingActionButton: FloatingActionButton(
         onPressed: () => navigateToAddPostScreen(context),
         backgroundColor: Colors.blue,

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/core/common/error_text.dart';
@@ -8,12 +7,13 @@ import 'package:reddit_clone/features/community/controller/community_controller.
 import 'package:reddit_clone/features/post/controller/add_post_controller.dart';
 
 class FeedScreen extends ConsumerWidget {
-  const FeedScreen({super.key});
+  final sortChoice;
+  const FeedScreen(this.sortChoice, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(userCommunitiesProvider).when(
-        data: (data) => ref.watch(userPostsProvider(data)).when(
+        data: (data) => ref.watch(sortChoice == 'top' ? userTopPostsProvider(data) : userPostsProvider(data)).when(
             data: (data) {
               return ListView.builder(
                   itemCount: data.length,
@@ -25,7 +25,7 @@ class FeedScreen extends ConsumerWidget {
             error: (error, stacktrace) => ErrorText(error: error.toString()),
             loading: () => const Loader()),
         error: (error, stacktrace) {
-          if (kDebugMode) print(error.toString());
+          print(error.toString());
           return ErrorText(error: error.toString());
         },
         loading: () => const Loader());

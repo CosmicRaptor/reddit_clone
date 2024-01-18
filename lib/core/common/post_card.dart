@@ -13,23 +13,28 @@ import '../constants/constants.dart';
 import 'error_text.dart';
 import 'loader.dart';
 
-class PostCard extends ConsumerWidget {
+class PostCard extends ConsumerStatefulWidget {
   final Post post;
   const PostCard({
     super.key,
     required this.post,
   });
 
+  @override
+  ConsumerState<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends ConsumerState<PostCard> {
   void deletePost(WidgetRef ref, BuildContext context) async {
-    ref.read(postControllerProvider.notifier).deletePost(post, context);
+    ref.read(postControllerProvider.notifier).deletePost(widget.post, context);
   }
 
   void upvotePost(WidgetRef ref) async {
-    ref.read(postControllerProvider.notifier).upvote(post);
+    ref.read(postControllerProvider.notifier).upvote(widget.post);
   }
 
   void downvotePost(WidgetRef ref) async {
-    ref.read(postControllerProvider.notifier).downvote(post);
+    ref.read(postControllerProvider.notifier).downvote(widget.post);
   }
 
   void awardPost(WidgetRef ref, String award, BuildContext context) async {
@@ -37,22 +42,22 @@ class PostCard extends ConsumerWidget {
   }
 
   void navigateToUser(BuildContext context) {
-    Routemaster.of(context).push('/u/${post.uid}');
+    Routemaster.of(context).push('/u/${widget.post.uid}');
   }
 
   void navigateToCommunity(BuildContext context) {
-    Routemaster.of(context).push('/r/${post.communityName}');
+    Routemaster.of(context).push('/r/${widget.post.communityName}');
   }
 
   void navigateToComments(BuildContext context) {
-    Routemaster.of(context).push('/post/${post.id}/comments');
+    Routemaster.of(context).push('/post/${widget.post.id}/comments');
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isTypeImage = post.type == 'image';
-    final isTypeText = post.type == 'text';
-    final isTypeLink = post.type == 'link';
+  Widget build(BuildContext context) {
+    final isTypeImage = widget.post.type == 'image';
+    final isTypeText = widget.post.type == 'text';
+    final isTypeLink = widget.post.type == 'link';
     final user = ref.watch(userProvider)!;
     final isGuest = !user.isAuthenticated;
 
@@ -68,35 +73,11 @@ class PostCard extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // if (kIsWeb)
-                //   Column(
-                //     children: [
-                //       IconButton(
-                //         onPressed: isGuest ? () {} : () => upvotePost(ref),
-                //         icon: Icon(
-                //           Constants.up,
-                //           size: 30,
-                //           color: post.upvotes.contains(user.uid) ? Pallete.redColor : null,
-                //         ),
-                //       ),
-                //       Text(
-                //         '${post.upvotes.length - post.downvotes.length == 0 ? 'Vote' : post.upvotes.length - post.downvotes.length}',
-                //         style: const TextStyle(fontSize: 17),
-                //       ),
-                //       IconButton(
-                //         onPressed: isGuest ? () {} : () => downvotePost(ref),
-                //         icon: Icon(
-                //           Constants.down,
-                //           size: 30,
-                //           color: post.downvotes.contains(user.uid) ? Pallete.blueColor : null,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
                 Expanded(
                   child: Column(
                     children: [
                       Container(
+                        color: currentTheme.cardTheme.color ,
                         padding: const EdgeInsets.symmetric(
                           vertical: 4,
                           horizontal: 16,
@@ -113,7 +94,7 @@ class PostCard extends ConsumerWidget {
                                       onTap: () => navigateToCommunity(context),
                                       child: CircleAvatar(
                                         backgroundImage: NetworkImage(
-                                          post.communityProfilePic,
+                                          widget.post.communityProfilePic,
                                         ),
                                         radius: 16,
                                       ),
@@ -124,7 +105,7 @@ class PostCard extends ConsumerWidget {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'c/${post.communityName}',
+                                            'c/${widget.post.communityName}',
                                             style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -133,7 +114,7 @@ class PostCard extends ConsumerWidget {
                                           GestureDetector(
                                             onTap: () => navigateToUser(context),
                                             child: Text(
-                                              'u/${post.username}',
+                                              'u/${widget.post.username}',
                                               style: const TextStyle(fontSize: 12),
                                             ),
                                           ),
@@ -142,7 +123,7 @@ class PostCard extends ConsumerWidget {
                                     ),
                                   ],
                                 ),
-                                if (post.uid == user.uid)
+                                if (widget.post.uid == user.uid)
                                   IconButton(
                                     onPressed: () => deletePost(ref, context),
                                     icon: Icon(
@@ -152,15 +133,15 @@ class PostCard extends ConsumerWidget {
                                   ),
                               ],
                             ),
-                            if (post.awards.isNotEmpty) ...[
+                            if (widget.post.awards.isNotEmpty) ...[
                               const SizedBox(height: 5),
                               SizedBox(
                                 height: 25,
                                 child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: post.awards.length,
+                                  itemCount: widget.post.awards.length,
                                   itemBuilder: (BuildContext context, int index) {
-                                    final award = post.awards[index];
+                                    final award = widget.post.awards[index];
                                     return Image.asset(
                                       Constants.awards[award]!,
                                       height: 23,
@@ -172,7 +153,7 @@ class PostCard extends ConsumerWidget {
                             Padding(
                               padding: const EdgeInsets.only(top: 10.0),
                               child: Text(
-                                post.title,
+                                widget.post.title,
                                 style: const TextStyle(
                                   fontSize: 19,
                                   fontWeight: FontWeight.bold,
@@ -184,7 +165,7 @@ class PostCard extends ConsumerWidget {
                                 height: MediaQuery.of(context).size.height * 0.35,
                                 width: double.infinity,
                                 child: Image.network(
-                                  post.link!,
+                                  widget.post.link!,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -193,7 +174,7 @@ class PostCard extends ConsumerWidget {
                                 padding: const EdgeInsets.symmetric(horizontal: 18),
                                 child: AnyLinkPreview(
                                   displayDirection: UIDirection.uiDirectionHorizontal,
-                                  link: post.link!,
+                                  link: widget.post.link!,
                                 ),
                               ),
                             if (isTypeText)
@@ -201,7 +182,7 @@ class PostCard extends ConsumerWidget {
                                 alignment: Alignment.bottomLeft,
                                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                                 child: Text(
-                                  post.description!,
+                                  widget.post.description!,
                                   style: const TextStyle(
                                     color: Colors.grey,
                                   ),
@@ -218,11 +199,11 @@ class PostCard extends ConsumerWidget {
                                         icon: Icon(
                                           Constants.up,
                                           size: 30,
-                                          color: post.upvotes.contains(user.uid) ? Pallete.redColor : null,
+                                          color: widget.post.upvotes.contains(user.uid) ? Pallete.redColor : null,
                                         ),
                                       ),
                                       Text(
-                                        '${post.upvotes.length - post.downvotes.length == 0 ? 'Vote' : post.upvotes.length - post.downvotes.length}',
+                                        '${widget.post.upvotes.length - widget.post.downvotes.length == 0 ? 'Vote' : widget.post.upvotes.length - widget.post.downvotes.length}',
                                         style: const TextStyle(fontSize: 17),
                                       ),
                                       IconButton(
@@ -230,7 +211,7 @@ class PostCard extends ConsumerWidget {
                                         icon: Icon(
                                           Constants.down,
                                           size: 30,
-                                          color: post.downvotes.contains(user.uid) ? Pallete.blueColor : null,
+                                          color: widget.post.downvotes.contains(user.uid) ? Pallete.blueColor : null,
                                         ),
                                       ),
                                     ],
@@ -244,12 +225,12 @@ class PostCard extends ConsumerWidget {
                                       ),
                                     ),
                                     Text(
-                                      '${post.commentCount == 0 ? 'Comment' : post.commentCount}',
+                                      '${widget.post.commentCount == 0 ? 'Comment' : widget.post.commentCount}',
                                       style: const TextStyle(fontSize: 17),
                                     ),
                                   ],
                                 ),
-                                ref.watch(getCommunityByNameProvider(post.communityName)).when(
+                                ref.watch(getCommunityByNameProvider(widget.post.communityName)).when(
                                   data: (data) {
                                     if (data.mods.contains(user.uid)) {
                                       return IconButton(
