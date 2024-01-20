@@ -195,7 +195,7 @@ class _PostCardState extends ConsumerState<PostCard> {
                                   Row(
                                     children: [
                                       IconButton(
-                                        onPressed: isGuest ? () {} : () => upvotePost(ref),
+                                        onPressed: isGuest ? () {Routemaster.of(context).push('/');} : () => upvotePost(ref),
                                         icon: Icon(
                                           Constants.up,
                                           size: 30,
@@ -207,7 +207,7 @@ class _PostCardState extends ConsumerState<PostCard> {
                                         style: const TextStyle(fontSize: 17),
                                       ),
                                       IconButton(
-                                        onPressed: isGuest ? () {} : () => downvotePost(ref),
+                                        onPressed: isGuest ? () {Routemaster.of(context).push('/');} : () => downvotePost(ref),
                                         icon: Icon(
                                           Constants.down,
                                           size: 30,
@@ -249,7 +249,7 @@ class _PostCardState extends ConsumerState<PostCard> {
                                 ),
                                 IconButton(
                                   onPressed: isGuest
-                                      ? () {}
+                                      ? () {Routemaster.of(context).push('/');}
                                       : () {
                                     showDialog(
                                       context: context,

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../core/providers/storage_providers.dart';
 import '../../../core/utils.dart';
 import '../../../models/community_model.dart';
@@ -13,7 +12,8 @@ import '../../auth/controller/auth_controller.dart';
 import '../repository/add_post_repository.dart';
 
 
-final postControllerProvider = StateNotifierProvider<PostController, bool>((ref) {
+final postControllerProvider = StateNotifierProvider<PostController, bool>((
+    ref) {
   final postRepository = ref.watch(postRepositoryProvider);
   final storageRepository = ref.watch(storageRepositoryProvider);
   return PostController(
@@ -23,12 +23,14 @@ final postControllerProvider = StateNotifierProvider<PostController, bool>((ref)
   );
 });
 
-final userPostsProvider = StreamProvider.family((ref, List<Community> communities) {
+final userPostsProvider = StreamProvider.family((ref,
+    List<Community> communities) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.fetchUserPosts(communities);
 });
 
-final userTopPostsProvider = StreamProvider.family((ref, List<Community> communities) {
+final userTopPostsProvider = StreamProvider.family((ref,
+    List<Community> communities) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.fetchUserTopPosts(communities);
 });
@@ -47,11 +49,13 @@ class PostController extends StateNotifier<bool> {
   final PostRepository _postRepository;
   final Ref _ref;
   final StorageRepository _storageRepository;
+
   PostController({
     required PostRepository postRepository,
     required Ref ref,
     required StorageRepository storageRepository,
-  })  : _postRepository = postRepository,
+  })
+      : _postRepository = postRepository,
         _ref = ref,
         _storageRepository = storageRepository,
         super(false);
@@ -161,6 +165,7 @@ class PostController extends StateNotifier<bool> {
       );
 
       final res = await _postRepository.addPost(post);
+      //TODO: update user karma when a post is created
       //_ref.read(userProfileControllerProvider.notifier).updateUserKarma(UserKarma.imagePost);
       state = false;
       res.fold((l) => showSnackBar(context, l.message), (r) {
@@ -191,7 +196,8 @@ class PostController extends StateNotifier<bool> {
   void deletePost(Post post, BuildContext context) async {
     final res = await _postRepository.deletePost(post);
     //_ref.read(userProfileControllerProvider.notifier).updateUserKarma(UserKarma.deletePost);
-    res.fold((l) => null, (r) => showSnackBar(context, 'Post Deleted successfully!'));
+    res.fold((l) => null, (r) =>
+        showSnackBar(context, 'Post Deleted successfully!'));
   }
 
   void upvote(Post post) async {
